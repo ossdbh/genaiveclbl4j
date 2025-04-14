@@ -47,7 +47,7 @@ public class GenAILabelGeneratorInheritanceTest {
         //System.out.println(this.chld.toString());
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.chld);
         System.out.println(format);
-        Assert.assertTrue("This is a String in a parent class Andrea|This is an int in a parent class 38|This is a String in a deep stacked inherited child class, level 1Emma|This is another String in a deep stacked inherited child class, level 1Well dont skip this|This is an int in a deep stacked inherited child class, level 16".equals(format));
+        Assert.assertTrue("This is a String in a parent class Andrea|This is an int in a parent class 38|This is a String in a deep stacked inherited child class, level 1 Emma|This is another String in a deep stacked inherited child class, level 1 Well dont skip this|This is an int in a deep stacked inherited child class, level 1 6".equals(format));
     }
 
     @Test
@@ -55,7 +55,7 @@ public class GenAILabelGeneratorInheritanceTest {
         // Run with teen instance that has 3 levels of inheritance
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.t);
         System.out.println(format);
-        Assert.assertTrue("This is a String in a parent class Andrea|This is an int in a parent class 38|This is a String in a deep stacked inherited child class, level 1Emma|This is another String in a deep stacked inherited child class, level 1well skip this|This is an int in a deep stacked inherited child class, level 16|This is a String in a deep stacked inherited child class, level 2ashda skjdfg skjd skjdhfksdh kjgs|This is an int in a deep stacked inherited child class, level 21000000|This is another String in a deep stacked inherited child class, level 2Hey There lets see what we got|This is another int in a deep stacked inherited child class, level 25000000".equals(format));
+        Assert.assertTrue("This is a String in a parent class Andrea|This is an int in a parent class 38|This is a String in a deep stacked inherited child class, level 1 Emma|This is another String in a deep stacked inherited child class, level 1 well skip this|This is an int in a deep stacked inherited child class, level 1 6|This is a String in a deep stacked inherited child class, level 2ashda skjdfg skjd skjdhfksdh kjgs|This is an int in a deep stacked inherited child class, level 21000000|This is another String in a deep stacked inherited child class, level 2Hey There lets see what we got|This is another int in a deep stacked inherited child class, level 25000000".equals(format));
     }
 
     @Test
@@ -69,7 +69,7 @@ public class GenAILabelGeneratorInheritanceTest {
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.t, l);
         System.out.println(format);
         // This should not print "well skip this and 1000000"
-        Assert.assertTrue("This is a String in a parent class Andrea|This is an int in a parent class 38|This is a String in a deep stacked inherited child class, level 1Emma|This is an int in a deep stacked inherited child class, level 16|This is a String in a deep stacked inherited child class, level 2ashda skjdfg skjd skjdhfksdh kjgs|This is another String in a deep stacked inherited child class, level 2Hey There lets see what we got|This is another int in a deep stacked inherited child class, level 25000000".equals(format));
+        Assert.assertTrue("This is a String in a parent class Andrea|This is an int in a parent class 38|This is a String in a deep stacked inherited child class, level 1 Emma|This is an int in a deep stacked inherited child class, level 1 6|This is a String in a deep stacked inherited child class, level 2ashda skjdfg skjd skjdhfksdh kjgs|This is another String in a deep stacked inherited child class, level 2Hey There lets see what we got|This is another int in a deep stacked inherited child class, level 25000000".equals(format));
     }
 
     @Test
