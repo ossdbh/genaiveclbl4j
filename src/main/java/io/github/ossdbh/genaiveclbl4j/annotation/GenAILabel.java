@@ -1,5 +1,7 @@
 package io.github.ossdbh.genaiveclbl4j.annotation;
 
+import io.github.ossdbh.genaiveclbl4j.constants.Constants;
+
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -11,8 +13,5 @@ public @interface GenAILabel {
     // If the attribute's value on which this annotation is present
     // is null then use this as the default value as far
     // as the attribute's data is concerned
-    // TODO: for now the API only supports string default values
-    // TODO: in the future we may extend this by case-switching default
-    // TODO: values for all data-types
-    String defaultValue() default "UNKNOWN";
+    String defaultValue() default Constants.DEFAULT_VALUE_UNKNOWN;
 }

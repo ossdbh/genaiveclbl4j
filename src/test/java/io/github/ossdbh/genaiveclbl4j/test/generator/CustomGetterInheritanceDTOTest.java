@@ -25,6 +25,6 @@ public class CustomGetterInheritanceDTOTest {
         // getter method name for each attribute
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.nonLombokDTO3, s -> "GET_" + s);
         System.out.println(format);
-        Assert.assertTrue("This is a non lombok string in base class with value: BaseClass | This is a non lombok int in base class with value: 100 | This is a non lombok string in inherited class with value: DerivedClass | This is a non lombok int in inherited class with value: 1000 | I also support multiple labels on the same field 1000".equals(format));
+        Assert.assertTrue("This is a non lombok string in base class with value: BaseClass|This is a non lombok int in base class with value: 100|This is a non lombok string in inherited class with value: DerivedClass|This is a non lombok int in inherited class with value: 1000|I also support multiple labels on the same field 1000".equals(format));
     }
 }

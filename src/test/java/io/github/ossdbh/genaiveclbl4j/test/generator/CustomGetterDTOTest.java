@@ -31,7 +31,7 @@ public class CustomGetterDTOTest {
         // getter method name for each attribute
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.nonLombokDTO1, s -> "GET_" + s);
         System.out.println("Format: " + format);
-        Assert.assertTrue("This is a non lombok string abcdefgh | This is a non lombok string 10000".equals(format));
+        Assert.assertTrue("This is a non lombok string abcdefgh|This is a non lombok string 10000".equals(format));
     }
 
     @Test
@@ -41,7 +41,7 @@ public class CustomGetterDTOTest {
 
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.nonLombokDTO, s -> "GET_" + s);
         System.out.println("Format: " + format);
-        Assert.assertTrue("This is a string pqrstuvw | This is a string 10000000".equals(format));
+        Assert.assertTrue("This is a string pqrstuvw|This is a string 10000000".equals(format));
     }
 
     @Test
@@ -57,6 +57,6 @@ public class CustomGetterDTOTest {
 
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.nonLombokDTO, s -> "GET_" + s);
         System.out.println("Format: " + format);
-        Assert.assertTrue("This is a string pqrstuvw | This is a nonlombok nested string attribute whatisthis | This is a nonlombok nested string attribute1000 | This is a string 10000000".equals(format));
+        Assert.assertTrue("This is a string pqrstuvw|This is a nonlombok nested string attribute whatisthis|This is a nonlombok nested string attribute1000|This is a string 10000000".equals(format));
     }
 }

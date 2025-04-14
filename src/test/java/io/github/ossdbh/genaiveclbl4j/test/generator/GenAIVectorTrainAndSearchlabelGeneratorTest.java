@@ -57,7 +57,7 @@ public class GenAIVectorTrainAndSearchlabelGeneratorTest {
 
         System.out.println(fwFormattedRecord);
 
-        Assert.assertTrue("This is a nested DTO label generation test record  | This is a string l_val | This is a nested child dto record, level 1 starts  | This is a nested String, level 1 l1_val | This is a nested child dto record, level 2 instance begins  | This is a deeply nested string, level 2 l2_val | Testing multiple labels, level 2 l2_val | This is a deeply nested integer, level 2 exiting 20 | This is also a nested String, level 1 exiting10 | This is a nested child dto record, another level 1 instance begins  | This is a nested string, level 1 l1_val | This is also a nested string, another level 1 exiting30 | This is an Integer 40 | This is also an Integer 50 | This is another Integer 123".equals(fwFormattedRecord));
+        Assert.assertTrue("This is a nested DTO label generation test record |This is a string l_val|This is a nested child dto record, level 1 starts |This is a nested String, level 1 l1_val|This is a nested child dto record, level 2 instance begins |This is a deeply nested string, level 2 l2_val|Testing multiple labels, level 2 l2_val|This is a deeply nested integer, level 2 exiting 20|This is also a nested String, level 1 exiting10|This is a nested child dto record, another level 1 instance begins |This is a nested string, level 1 l1_val|This is also a nested string, another level 1 exiting30|This is an Integer 40|This is also an Integer 50|This is another Integer 123".equals(fwFormattedRecord));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class GenAIVectorTrainAndSearchlabelGeneratorTest {
 
         // We skipped the 3 level nested dto ChildOfChild11DTO and parent level attribute parentDTOInt1
         // Hence the assert value as compared to the previous test is level32010 removed and right justified 40 removed
-        Assert.assertTrue("This is a nested DTO label generation test record  | This is a string l_val | This is a nested child dto record, level 1 starts  | This is a nested String, level 1 l1_val | This is a nested child dto record, level 2 instance begins  | This is also a nested String, level 1 exiting10 | This is a nested child dto record, another level 1 instance begins  | This is a nested string, level 1 l1_val | This is also a nested string, another level 1 exiting30 | This is also an Integer 50 | This is another Integer 123".equals(fwFormattedRecord));
+        Assert.assertTrue("This is a nested DTO label generation test record |This is a string l_val|This is a nested child dto record, level 1 starts |This is a nested String, level 1 l1_val|This is a nested child dto record, level 2 instance begins |This is also a nested String, level 1 exiting10|This is a nested child dto record, another level 1 instance begins |This is a nested string, level 1 l1_val|This is also a nested string, another level 1 exiting30|This is also an Integer 50|This is another Integer 123".equals(fwFormattedRecord));
     }
 
     @Test
