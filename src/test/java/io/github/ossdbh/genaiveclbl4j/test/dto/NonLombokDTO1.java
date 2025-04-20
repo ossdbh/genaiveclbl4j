@@ -3,7 +3,7 @@ package io.github.ossdbh.genaiveclbl4j.test.dto;
 import io.github.ossdbh.genaiveclbl4j.annotation.GenAIInstance;
 import io.github.ossdbh.genaiveclbl4j.annotation.GenAILabel;
 
-@GenAIInstance
+@GenAIInstance(label = "This is a NonLombokDTO1 ")
 public class NonLombokDTO1 {
 
     @GenAILabel(label = "This is a non lombok string ")

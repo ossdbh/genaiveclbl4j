@@ -21,6 +21,8 @@ public class CustomGetterDTOTest {
 
     @Test
     public void test1() {
+        String expected = "(This is a NonLombokDTO1 (This is a non lombok string abcdefgh,This is a non lombok string 10000))";
+
         this.nonLombokDTO1.SET_str1("abcdefgh");
         this.nonLombokDTO1.SET_int1(10000);
 
@@ -31,21 +33,25 @@ public class CustomGetterDTOTest {
         // getter method name for each attribute
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.nonLombokDTO1, s -> "GET_" + s);
         System.out.println("Format: " + format);
-        Assert.assertTrue("This is a non lombok string abcdefgh|This is a non lombok string 10000".equals(format));
+        Assert.assertTrue(expected.equals(format));
     }
 
     @Test
     public void test2() {
+        String expected = "(This is a NonLombokDTO (This is a string pqrstuvw,This is a string 10000000))";
+
         this.nonLombokDTO.SET_str1("pqrstuvw");
         this.nonLombokDTO.SET_int1(10000000);
 
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.nonLombokDTO, s -> "GET_" + s);
         System.out.println("Format: " + format);
-        Assert.assertTrue("This is a string pqrstuvw|This is a string 10000000".equals(format));
+        Assert.assertTrue(expected.equals(format));
     }
 
     @Test
     public void test3() {
+        String expected = "(This is a NonLombokDTO (This is a string pqrstuvw,(This is a nonlombok nested string attribute whatisthis,This is a nonlombok nested string attribute1000)This is a string 10000000))";
+
         this.nonLombokDTO.SET_str1("pqrstuvw");
 
         NestedNonLombokDTO nestedNonLombokDTO = new NestedNonLombokDTO();
@@ -57,6 +63,6 @@ public class CustomGetterDTOTest {
 
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.nonLombokDTO, s -> "GET_" + s);
         System.out.println("Format: " + format);
-        Assert.assertTrue("This is a string pqrstuvw|This is a nonlombok nested string attribute whatisthis|This is a nonlombok nested string attribute1000|This is a string 10000000".equals(format));
+        Assert.assertTrue(expected.equals(format));
     }
 }

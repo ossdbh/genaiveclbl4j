@@ -25,8 +25,5 @@ public class GenAILabelDTO {
     private Class attributeClass;
 
     @Builder.Default
-    private boolean appendDelimiter = true;
-
-    @Builder.Default
     private String labelAndDataConcatenator = Constants.LABEL_AND_DATA_CONCATENATOR;
 }

@@ -4,7 +4,7 @@ import io.github.ossdbh.genaiveclbl4j.annotation.GenAIInstance;
 import io.github.ossdbh.genaiveclbl4j.annotation.GenAILabel;
 import io.github.ossdbh.genaiveclbl4j.annotation.GenAINestedInstance;
 
-@GenAIInstance
+@GenAIInstance(label = "This is a NonLombokDTO ")
 public class NonLombokDTO {
 
     @GenAILabel(label = "This is a string ")

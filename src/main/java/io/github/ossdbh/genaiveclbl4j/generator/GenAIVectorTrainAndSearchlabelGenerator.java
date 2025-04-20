@@ -146,6 +146,15 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
         StringBuilder builder = new StringBuilder();
 
         if (instance != null) {
+            genAILabelDTOList.add(
+                    GenAILabelDTO.builder()
+                            .label(null)
+                            .method(null)
+                            .data("(")
+                            .attributeClass(null)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build());
+
             GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
                     instance.getClass(),
                     instance,
@@ -155,6 +164,15 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                     getterMethodDiscoverer,
                     labelAndDataConcatenator
             );
+
+            genAILabelDTOList.add(
+                    GenAILabelDTO.builder()
+                            .label(null)
+                            .method(null)
+                            .data(")")
+                            .attributeClass(null)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build());
 
             if (genAILabelDTOList != null && genAILabelDTOList.size() > 0) {
                 for (int i = 0; i < genAILabelDTOList.size(); i++) {
@@ -185,11 +203,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                             labelData = Constants.DEFAULT_VALUE_UNKNOWN + " ";
                         }
 
-                        if (genAILabelDTO != null && genAILabelDTO.isAppendDelimiter()) {
-                            builder.append(label + labelData + genAILabelDTO.getLabelAndDataConcatenator());
-                        } else {
-                            builder.append(label + labelData);
-                        }
+                        builder.append(label + labelData);
                     } else {
                         if (genAILabelDTO != null && genAILabelDTO.getLabel() != null) {
                             label = genAILabelDTO.getLabel();
@@ -236,12 +250,12 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                 if (discoveredLabel != null && discoveredLabel.length() > 0) {
                     // We generate a new label and set its data to blank
                     // Since this is a Class level label it would not have any data associated with the label
-                    fwAttrList.add(GenAILabelDTO.builder()
+                    fwAttrList.add(
+                            GenAILabelDTO.builder()
                             .label(discoveredLabel)
                             .method(null)
                             .data("")
                             .attributeClass(clazz)
-                            .appendDelimiter(true)
                             .labelAndDataConcatenator(labelAndDataConcatenator)
                             .build());
                 }
@@ -261,6 +275,14 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                 // Build a list of declared fields that the class, passed in as param, has declared
                 classFieldResolver.getClassFields(clazz, new Stack<>(), new Stack<String>(), declaredFields, fieldsToSkipMap);
 
+                fwAttrList.add(
+                        GenAILabelDTO.builder()
+                                .label(null)
+                                .method(null)
+                                .data("(")
+                                .attributeClass(null)
+                                .labelAndDataConcatenator(labelAndDataConcatenator)
+                                .build());
                 for (int i = 0; i < declaredFields.size(); i++) {
                     Field f = declaredFields.get(i);
                     // Discover annotations on the field
@@ -302,7 +324,27 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                                         fieldsToSkipMap,
                                                         getterMethodDiscoverer,
                                                         labelAndDataConcatenator);
+                                                if (k < labels.length - 1) {
+                                                    fwAttrList.add(
+                                                            GenAILabelDTO.builder()
+                                                                    .label(null)
+                                                                    .method(null)
+                                                                    .data("||")
+                                                                    .attributeClass(null)
+                                                                    .labelAndDataConcatenator(labelAndDataConcatenator)
+                                                                    .build());
+                                                }
                                             }
+                                        }
+                                        if (i < declaredFields.size() - 1) {
+                                            fwAttrList.add(
+                                                    GenAILabelDTO.builder()
+                                                            .label(null)
+                                                            .method(null)
+                                                            .data(",")
+                                                            .attributeClass(null)
+                                                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                                                            .build());
                                         }
                                     } catch (NoSuchMethodException e) {
                                         throw new GenAITextLabelGeneratorException(e.getMessage(), e);
@@ -343,6 +385,16 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                                     fieldsToSkipMap,
                                                     getterMethodDiscoverer,
                                                     labelAndDataConcatenator);
+                                        }
+                                        if (i < declaredFields.size() - 1) {
+                                            fwAttrList.add(
+                                                    GenAILabelDTO.builder()
+                                                            .label(null)
+                                                            .method(null)
+                                                            .data(",")
+                                                            .attributeClass(null)
+                                                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                                                            .build());
                                         }
                                     } catch (IllegalAccessException e) {
                                         throw new GenAITextLabelGeneratorException(e.getMessage(), e);
@@ -400,11 +452,28 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                         }
                     }
                 }
+                fwAttrList.add(
+                        GenAILabelDTO.builder()
+                                .label(null)
+                                .method(null)
+                                .data(")")
+                                .attributeClass(null)
+                                .labelAndDataConcatenator(labelAndDataConcatenator)
+                                .build());
             }
             attrXPath.pop();
         } else if (clazz.getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_LIST.getLongName()) ||
                 clazz.getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_ARRAYLIST.getLongName())) {
             List l = (List) instance;
+
+            fwAttrList.add(
+                    GenAILabelDTO.builder()
+                            .label(null)
+                            .method(null)
+                            .data("[")
+                            .attributeClass(null)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build());
             if (l != null && l.size() > 0) {
                 for (int i = 0; i < l.size(); i++) {
                     // We know that collections always works on objects
@@ -421,8 +490,27 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                 labelAndDataConcatenator
                         );
                     }
+                    if (i < l.size() - 1) {
+                        fwAttrList.add(
+                                GenAILabelDTO.builder()
+                                        .label(null)
+                                        .method(null)
+                                        .data(",")
+                                        .attributeClass(null)
+                                        .labelAndDataConcatenator(labelAndDataConcatenator)
+                                        .build()
+                        );
+                    }
                 }
             }
+            fwAttrList.add(
+                    GenAILabelDTO.builder()
+                            .label(null)
+                            .method(null)
+                            .data("]")
+                            .attributeClass(null)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build());
         } else {
             // This could be an object inside a collection
             fwAttrList.add(GenAILabelDTO.builder()
@@ -430,7 +518,6 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                     .method(null)
                     .data(instance)
                     .attributeClass(null)
-                    .appendDelimiter(true)
                     .labelAndDataConcatenator(labelAndDataConcatenator)
                     .build());
         }
@@ -481,7 +568,6 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                             .method(getterMethodInferred)
                             .data(methodReturned)
                             .attributeClass(methodClass)
-                            .appendDelimiter(false)
                             .build()
             );
 
@@ -506,7 +592,6 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                             .method(getterMethodInferred)
                             .data(methodReturned)
                             .attributeClass(methodClass)
-                            .appendDelimiter(true)
                             .labelAndDataConcatenator(labelAndDataConcatenator)
                             .build()
             );

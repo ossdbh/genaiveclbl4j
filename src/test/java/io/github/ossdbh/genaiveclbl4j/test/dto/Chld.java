@@ -8,15 +8,15 @@ import lombok.ToString;
 
 @Getter
 @ToString
-@GenAIInstance
+@GenAIInstance(label = "This is a Chld Instance ")
 public class Chld extends Prnt {
-    @GenAILabel(label = "This is a String in a deep stacked inherited child class, level 1 ")
+    @GenAILabel(label = "This is a String in a deep stacked inherited child class @level1 ")
     private String childName;
 
-    @GenAILabel(label = "This is another String in a deep stacked inherited child class, level 1 ")
+    @GenAILabel(label = "This is another String in a deep stacked inherited child class @level1 ")
     private String skipThis = "";
 
-    @GenAILabel(label = "This is an int in a deep stacked inherited child class, level 1 ")
+    @GenAILabel(label = "This is an int in a deep stacked inherited child class @level1 ")
     private int childAge;
 
     @Builder(builderMethodName = "chldBuilder")

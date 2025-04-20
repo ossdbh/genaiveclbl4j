@@ -6,15 +6,15 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@GenAIInstance
+@GenAIInstance(label = "This is a Teen Instance ")
 public class Teen extends Chld {
-    @GenAILabel(label = "This is a String in a deep stacked inherited child class, level 2")
+    @GenAILabel(label = "This is a String in a deep stacked inherited child class, level 2 ")
     private String address;
-    @GenAILabel(label = "This is an int in a deep stacked inherited child class, level 2")
+    @GenAILabel(label = "This is an int in a deep stacked inherited child class, level 2 ")
     private Integer fld3;
-    @GenAILabel(label = "This is another String in a deep stacked inherited child class, level 2")
+    @GenAILabel(label = "This is another String in a deep stacked inherited child class, level 2 ")
     private String fld4;
-    @GenAILabel(label = "This is another int in a deep stacked inherited child class, level 2")
+    @GenAILabel(label = "This is another int in a deep stacked inherited child class, level 2 ")
     private Integer fld5;
 
     @Builder(builderMethodName = "teenBuilder")

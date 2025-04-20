@@ -29,12 +29,11 @@ public class CollectionsComplexObjectWithFlatDTOListWithLabeledDTOTest {
         flatDTOList.add(flatDTO3);
 
         this.skipFieldList = new ArrayList<>();
-        this.skipFieldList.add("CollectionsComplexObjectWithFlatDTOListLabeledDTO.flatDTOList");
     }
 
     @Test
     public void test() {
-        String expected = "This is a DTO that has a Collections object |This is a float label before collections UNKNOWN_VALUE |This is a String label before UNKNOWN_VALUE|This is a flatDTOList This is a flat DTO |This is String data denoting a name data1|Name is an important piece of information data1|This is biginteger data denoting heartbeat count till date 1234567891|This is a flat DTO |This is String data denoting a name data2|Name is an important piece of information data2|This is biginteger data denoting heartbeat count till date 2234567891|This is a flat DTO |This is String data denoting a name data3|Name is an important piece of information data3|This is biginteger data denoting heartbeat count till date 3234567891|This is a label after UNKNOWN_VALUE";
+        String expected = "(This is a DTO that has a Collections object (This is a float label before collections UNKNOWN_VALUE ,This is a String label before UNKNOWN_VALUE,This is a flatDTOList [This is a flat DTO (This is String data denoting a name data1||Name is an important piece of information data1,This is biginteger data denoting heartbeat count till date 1234567891),This is a flat DTO (This is String data denoting a name data2||Name is an important piece of information data2,This is biginteger data denoting heartbeat count till date 2234567891),This is a flat DTO (This is String data denoting a name data3||Name is an important piece of information data3,This is biginteger data denoting heartbeat count till date 3234567891)],This is a label after UNKNOWN_VALUE))";
 
         CollectionsComplexObjectWithFlatDTOListLabeledDTO collectionsDTO =
                 CollectionsComplexObjectWithFlatDTOListLabeledDTO.builder().flatDTOList(flatDTOList).build();
@@ -47,10 +46,13 @@ public class CollectionsComplexObjectWithFlatDTOListWithLabeledDTOTest {
 
     @Test
     public void testSkipList() {
-        String expected = "This is a DTO that has a Collections object |This is a float label before collections UNKNOWN_VALUE |This is a String label before UNKNOWN_VALUE|This is a label after UNKNOWN_VALUE";
+        String expected = "(This is a DTO that has a Collections object (This is a float label before collections UNKNOWN_VALUE ,This is a String label before UNKNOWN_VALUE,This is a label after UNKNOWN_VALUE))";
 
         CollectionsComplexObjectWithFlatDTOListLabeledDTO collectionsDTO =
                 CollectionsComplexObjectWithFlatDTOListLabeledDTO.builder().flatDTOList(flatDTOList).build();
+
+        // Skip a list element
+        this.skipFieldList.add("CollectionsComplexObjectWithFlatDTOListLabeledDTO.flatDTOList");
 
         String label = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(collectionsDTO, this.skipFieldList);
         System.out.println("Generated Label: " + label);

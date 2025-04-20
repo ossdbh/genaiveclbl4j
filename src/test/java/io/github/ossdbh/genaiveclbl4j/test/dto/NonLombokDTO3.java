@@ -3,12 +3,12 @@ package io.github.ossdbh.genaiveclbl4j.test.dto;
 import io.github.ossdbh.genaiveclbl4j.annotation.GenAIInstance;
 import io.github.ossdbh.genaiveclbl4j.annotation.GenAILabel;
 
-@GenAIInstance
+@GenAIInstance(label = "This is a NonLombokDTO3 extended from NonLombokDTO2 ")
 public class NonLombokDTO3 extends NonLombokDTO2 {
 
-    @GenAILabel(label = "This is a non lombok string in inherited class with value: ")
+    @GenAILabel(label = "This is a non lombok string in inherited class with value ")
     private String str3;
-    @GenAILabel(label = "This is a non lombok int in inherited class with value: ")
+    @GenAILabel(label = "This is a non lombok int in inherited class with value ")
     @GenAILabel(label = "I also support multiple labels on the same field ")
     private Integer int3;
 

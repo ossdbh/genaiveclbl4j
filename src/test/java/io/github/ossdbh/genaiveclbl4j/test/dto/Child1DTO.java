@@ -14,15 +14,15 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@GenAIInstance(label = "This is a nested child dto record, level 1 starts ")
+@GenAIInstance(label = "This is a nested child dto record @level1 starts ")
 public class Child1DTO {
-    @GenAILabel(label = "This is a nested String, level 1 ")
+    @GenAILabel(label = "This is a nested String @level1 ")
     private String child1DTOStr1;
 
     @GenAINestedInstance
     private ChildOfChild11DTO childOfChild11DTO;
 
-    @GenAILabel(label = "This is also a nested String, level 1 exiting")
+    @GenAILabel(label = "This is also a nested String @level1 exiting")
     private Integer child1DTOInt1;
 
 }

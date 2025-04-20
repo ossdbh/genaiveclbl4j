@@ -39,7 +39,7 @@ public class CollectionsSimpleObjectDTOTest {
 
     @Test
     public void testSingleListLabel() {
-        String expected = "This is a DTO that has a Collections object |This is a float label before collections 1234.0|This is a label before before the list|This is a list element list_string1|list_string2|list_string3|This is a label after after the list";
+        String expected = "(This is a DTO that has a Collections object (This is a float label before collections 1234.0,This is a label before before the list,This is a list element [list_string1,list_string2,list_string3],This is a label after after the list))";
 
         String label = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(collectionsSimpleObjectDTO);
         System.out.println("Generated Label: " + label);
@@ -49,7 +49,7 @@ public class CollectionsSimpleObjectDTOTest {
 
     @Test
     public void testSingleListLabelSkip() {
-        String expected = "This is a DTO that has a Collections object |This is a float label before collections 1234.0|This is a label before before the list|This is a label after after the list";
+        String expected = "(This is a DTO that has a Collections object (This is a float label before collections 1234.0,This is a label before before the list,This is a label after after the list))";
 
         List<String> l = new ArrayList<>();
         l.add("CollectionsSimpleObjectDTO.stringList");
@@ -63,7 +63,7 @@ public class CollectionsSimpleObjectDTOTest {
 
     @Test
     public void testMultiListLabel() {
-        String expected = "This is a DTO that has a Collections object |This is a float label before collections 1234.0|This is a label before before the list|This is a list element first label list_string1|list_string2|list_string3|This is a list element second label list_string1|list_string2|list_string3|This is a label after after the list";
+        String expected = "(This is a DTO that has a Collections object (This is a float label before collections 1234.0,This is a label before before the list,This is a list element first label [list_string1,list_string2,list_string3]||This is a list element second label [list_string1,list_string2,list_string3],This is a label after after the list))";
 
         String label = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.collectionsSimpleObjectMultiLabeledListDTO);
         System.out.println("Generated Label: " + label);
