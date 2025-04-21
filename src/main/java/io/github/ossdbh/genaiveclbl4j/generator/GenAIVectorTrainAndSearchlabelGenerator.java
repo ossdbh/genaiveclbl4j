@@ -2,7 +2,9 @@ package io.github.ossdbh.genaiveclbl4j.generator;
 
 import io.github.ossdbh.genaiveclbl4j.annotation.GenAILabel;
 import io.github.ossdbh.genaiveclbl4j.constants.Constants;
+import io.github.ossdbh.genaiveclbl4j.constants.Functions;
 import io.github.ossdbh.genaiveclbl4j.dto.GenAILabelDTO;
+import io.github.ossdbh.genaiveclbl4j.dto.GenAILabelMetadataHelperDTO;
 import io.github.ossdbh.genaiveclbl4j.enums.GenAIAnnotationEnum;
 import io.github.ossdbh.genaiveclbl4j.enums.JavaStandardLibraryClassEnum;
 import io.github.ossdbh.genaiveclbl4j.exception.GenAITextLabelGeneratorException;
@@ -15,6 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -146,15 +149,6 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
         StringBuilder builder = new StringBuilder();
 
         if (instance != null) {
-            genAILabelDTOList.add(
-                    GenAILabelDTO.builder()
-                            .label(null)
-                            .method(null)
-                            .data("(")
-                            .attributeClass(null)
-                            .labelAndDataConcatenator(labelAndDataConcatenator)
-                            .build());
-
             GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
                     instance.getClass(),
                     instance,
@@ -164,15 +158,6 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                     getterMethodDiscoverer,
                     labelAndDataConcatenator
             );
-
-            genAILabelDTOList.add(
-                    GenAILabelDTO.builder()
-                            .label(null)
-                            .method(null)
-                            .data(")")
-                            .attributeClass(null)
-                            .labelAndDataConcatenator(labelAndDataConcatenator)
-                            .build());
 
             if (genAILabelDTOList != null && genAILabelDTOList.size() > 0) {
                 for (int i = 0; i < genAILabelDTOList.size(); i++) {
@@ -188,10 +173,10 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                         if (genAILabelDTO != null && genAILabelDTO.getData() != null) {
                             // This is the case where the label's attribute has a non-null value
                             // We want to check if the label's attribute is a collection instance
-                            // or not
+                            // or its an instance of Abstract
                             Class attrClass = genAILabelDTO.getClass();
                             // If its a collection instance
-                            if (genAILabelDTO.getData() instanceof Collection) {
+                            if (genAILabelDTO.getData() instanceof Collection || genAILabelDTO.getData() instanceof AbstractMap) {
                                 // We dont want to print the entire collection here
                                 // The objects subsequently are the ones that are part of the collection
                                 labelData = "";
@@ -228,19 +213,26 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
      *
      * @param clazz The class type that is being inspected
      * @param instance The actual instance that needs to be written in fixed width
-     * @param fwAttrList Depth First Stack that holds the discovered field attribute values
+     * @param genAILabelsDiscoveredList Depth First Stack that holds the discovered field attribute values
      * @param fieldsToSkipList list of dot separated xPath style attributes to skip
      * @param getterMethod The getter method discovery function that would be used by the generator
      * @return none
      */
     private static void generateTextLabel(Class clazz,
                                           Object instance,
-                                          List<GenAILabelDTO> fwAttrList,
+                                          List<GenAILabelDTO> genAILabelsDiscoveredList,
                                           Stack<String> attrXPath,
                                           Map<String, Integer> fieldsToSkipMap,
                                           Function<String, String> getterMethodDiscoverer,
                                           String labelAndDataConcatenator) {
         if (AnnotationHelper.isGenAIInstance(clazz)) {
+            Functions.addGenAILabelMetadataMarker.apply(
+                    genAILabelsDiscoveredList,
+                    GenAILabelMetadataHelperDTO.builder()
+                            .labelMetadata(Constants.GENAI_INSTANCE_START_INDICATOR)
+                            .labelAndDataConcatenator(labelAndDataConcatenator).build()
+            );
+
             // Push the current class instance into XPath
             attrXPath.push(instance.getClass().getSimpleName());
 
@@ -250,7 +242,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                 if (discoveredLabel != null && discoveredLabel.length() > 0) {
                     // We generate a new label and set its data to blank
                     // Since this is a Class level label it would not have any data associated with the label
-                    fwAttrList.add(
+                    genAILabelsDiscoveredList.add(
                             GenAILabelDTO.builder()
                             .label(discoveredLabel)
                             .method(null)
@@ -275,14 +267,13 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                 // Build a list of declared fields that the class, passed in as param, has declared
                 classFieldResolver.getClassFields(clazz, new Stack<>(), new Stack<String>(), declaredFields, fieldsToSkipMap);
 
-                fwAttrList.add(
-                        GenAILabelDTO.builder()
-                                .label(null)
-                                .method(null)
-                                .data("(")
-                                .attributeClass(null)
-                                .labelAndDataConcatenator(labelAndDataConcatenator)
-                                .build());
+                Functions.addGenAILabelMetadataMarker.apply(
+                        genAILabelsDiscoveredList,
+                        GenAILabelMetadataHelperDTO.builder()
+                                .labelMetadata(Constants.GENAI_FIELDS_START_INDICATOR)
+                                .labelAndDataConcatenator(labelAndDataConcatenator).build()
+                );
+
                 for (int i = 0; i < declaredFields.size(); i++) {
                     Field f = declaredFields.get(i);
                     // Discover annotations on the field
@@ -319,32 +310,28 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                                         f,
                                                         labelDiscovered,
                                                         defaultValue,
-                                                        fwAttrList,
+                                                        genAILabelsDiscoveredList,
                                                         attrXPath,
                                                         fieldsToSkipMap,
                                                         getterMethodDiscoverer,
                                                         labelAndDataConcatenator);
                                                 if (k < labels.length - 1) {
-                                                    fwAttrList.add(
-                                                            GenAILabelDTO.builder()
-                                                                    .label(null)
-                                                                    .method(null)
-                                                                    .data("||")
-                                                                    .attributeClass(null)
-                                                                    .labelAndDataConcatenator(labelAndDataConcatenator)
-                                                                    .build());
+                                                    Functions.addGenAILabelMetadataMarker.apply(
+                                                            genAILabelsDiscoveredList,
+                                                            GenAILabelMetadataHelperDTO.builder()
+                                                                    .labelMetadata(Constants.GENAI_MULTIPLE_LABEL_SEPARATOR_INDICATOR)
+                                                                    .labelAndDataConcatenator(labelAndDataConcatenator).build()
+                                                    );
                                                 }
                                             }
                                         }
                                         if (i < declaredFields.size() - 1) {
-                                            fwAttrList.add(
-                                                    GenAILabelDTO.builder()
-                                                            .label(null)
-                                                            .method(null)
-                                                            .data(",")
-                                                            .attributeClass(null)
-                                                            .labelAndDataConcatenator(labelAndDataConcatenator)
-                                                            .build());
+                                            Functions.addGenAILabelMetadataMarker.apply(
+                                                    genAILabelsDiscoveredList,
+                                                    GenAILabelMetadataHelperDTO.builder()
+                                                            .labelMetadata(Constants.GENAI_FIELD_SEPARATOR_INDICATOR)
+                                                            .labelAndDataConcatenator(labelAndDataConcatenator).build()
+                                            );
                                         }
                                     } catch (NoSuchMethodException e) {
                                         throw new GenAITextLabelGeneratorException(e.getMessage(), e);
@@ -380,21 +367,19 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                                     f,
                                                     labelDiscovered,
                                                     defaultValue,
-                                                    fwAttrList,
+                                                    genAILabelsDiscoveredList,
                                                     attrXPath,
                                                     fieldsToSkipMap,
                                                     getterMethodDiscoverer,
                                                     labelAndDataConcatenator);
                                         }
                                         if (i < declaredFields.size() - 1) {
-                                            fwAttrList.add(
-                                                    GenAILabelDTO.builder()
-                                                            .label(null)
-                                                            .method(null)
-                                                            .data(",")
-                                                            .attributeClass(null)
-                                                            .labelAndDataConcatenator(labelAndDataConcatenator)
-                                                            .build());
+                                            Functions.addGenAILabelMetadataMarker.apply(
+                                                    genAILabelsDiscoveredList,
+                                                    GenAILabelMetadataHelperDTO.builder()
+                                                            .labelMetadata(Constants.GENAI_FIELD_SEPARATOR_INDICATOR)
+                                                            .labelAndDataConcatenator(labelAndDataConcatenator).build()
+                                            );
                                         }
                                     } catch (IllegalAccessException e) {
                                         throw new GenAITextLabelGeneratorException(e.getMessage(), e);
@@ -408,7 +393,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                 attrXPath.pop();
                             } else if (fieldAnnotations[j].annotationType().getName().equals(
                                     Constants.GENAI_NESTED_ATTRIBUTE_ANNOTATION_LONG_NAME)) {
-                                // else if the field is marked as nested it means is has an FwfInstance annotation
+                                // else if the field is marked as nested it means is has an GenAINestedInstance annotation
                                 // on the field
                                 Class nestedType = f.getType();
                                 // Check if this nested type was annotated with FwInstance annotation
@@ -434,7 +419,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                             GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
                                                     nestedType,
                                                     nestedInstance,
-                                                    fwAttrList,
+                                                    genAILabelsDiscoveredList,
                                                     attrXPath,
                                                     fieldsToSkipMap,
                                                     getterMethodDiscoverer,
@@ -452,28 +437,36 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                         }
                     }
                 }
-                fwAttrList.add(
-                        GenAILabelDTO.builder()
-                                .label(null)
-                                .method(null)
-                                .data(")")
-                                .attributeClass(null)
+                Functions.addGenAILabelMetadataMarker.apply(
+                        genAILabelsDiscoveredList,
+                        GenAILabelMetadataHelperDTO.builder()
+                                .labelMetadata(Constants.GENAI_FIELDS_END_INDICATOR)
                                 .labelAndDataConcatenator(labelAndDataConcatenator)
-                                .build());
+                                .build()
+                );
             }
+
+            Functions.addGenAILabelMetadataMarker.apply(
+                    genAILabelsDiscoveredList,
+                    GenAILabelMetadataHelperDTO.builder()
+                            .labelMetadata(Constants.GENAI_INSTANCE_END_INDICATOR)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build()
+            );
+
             attrXPath.pop();
         } else if (clazz.getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_LIST.getLongName()) ||
                 clazz.getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_ARRAYLIST.getLongName())) {
             List l = (List) instance;
 
-            fwAttrList.add(
-                    GenAILabelDTO.builder()
-                            .label(null)
-                            .method(null)
-                            .data("[")
-                            .attributeClass(null)
+            Functions.addGenAILabelMetadataMarker.apply(
+                    genAILabelsDiscoveredList,
+                    GenAILabelMetadataHelperDTO.builder()
+                            .labelMetadata(Constants.GENAI_LIST_START_INDICATOR)
                             .labelAndDataConcatenator(labelAndDataConcatenator)
-                            .build());
+                            .build()
+            );
+
             if (l != null && l.size() > 0) {
                 for (int i = 0; i < l.size(); i++) {
                     // We know that collections always works on objects
@@ -483,7 +476,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                         GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
                                 listInstanceObject.getClass(),
                                 listInstanceObject,
-                                fwAttrList,
+                                genAILabelsDiscoveredList,
                                 attrXPath,
                                 fieldsToSkipMap,
                                 getterMethodDiscoverer,
@@ -491,29 +484,106 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                         );
                     }
                     if (i < l.size() - 1) {
-                        fwAttrList.add(
-                                GenAILabelDTO.builder()
-                                        .label(null)
-                                        .method(null)
-                                        .data(",")
-                                        .attributeClass(null)
+                        Functions.addGenAILabelMetadataMarker.apply(
+                                genAILabelsDiscoveredList,
+                                GenAILabelMetadataHelperDTO.builder()
+                                        .labelMetadata(Constants.GENAI_FIELD_SEPARATOR_INDICATOR)
                                         .labelAndDataConcatenator(labelAndDataConcatenator)
                                         .build()
                         );
                     }
                 }
+            } else {
+                // TODO: should we add UNKNOWN here
             }
-            fwAttrList.add(
-                    GenAILabelDTO.builder()
-                            .label(null)
-                            .method(null)
-                            .data("]")
-                            .attributeClass(null)
+            Functions.addGenAILabelMetadataMarker.apply(
+                    genAILabelsDiscoveredList,
+                    GenAILabelMetadataHelperDTO.builder()
+                            .labelMetadata(Constants.GENAI_LIST_END_INDICATOR)
                             .labelAndDataConcatenator(labelAndDataConcatenator)
-                            .build());
+                            .build()
+            );
+        } else if (clazz.getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_MAP.getLongName()) ||
+                clazz.getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_HASHMAP.getLongName())) {
+            // Cast the instance to a map
+            Map m = (Map) instance;
+
+            Functions.addGenAILabelMetadataMarker.apply(
+                    genAILabelsDiscoveredList,
+                    GenAILabelMetadataHelperDTO.builder()
+                            .labelMetadata(Constants.GENAI_MAP_START_INDICATOR)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build()
+            );
+
+            if (m != null && m.keySet() != null && m.keySet().size() > 0) {
+                Set<Map.Entry> e = m.entrySet();
+                Iterator<Map.Entry> iterator = e.iterator();
+                while (iterator.hasNext()) {
+                    // Certain that entry is not null
+                    Map.Entry entry = iterator.next();
+
+                    Object key = entry.getKey();
+
+                    // Run the key through depth first
+                    if (key != null) {
+                        GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
+                                key.getClass(),
+                                key,
+                                genAILabelsDiscoveredList,
+                                attrXPath,
+                                fieldsToSkipMap,
+                                getterMethodDiscoverer,
+                                labelAndDataConcatenator
+                        );
+                        // Add a KV separator
+                        Functions.addGenAILabelMetadataMarker.apply(
+                                genAILabelsDiscoveredList,
+                                GenAILabelMetadataHelperDTO.builder()
+                                        .labelMetadata(Constants.GENAI_MAP_KV_SEPARATOR_INDICATOR)
+                                        .labelAndDataConcatenator(labelAndDataConcatenator)
+                                        .build()
+                        );
+
+                        Object value = entry.getValue();
+                        if (value != null) {
+                            // Run the value through depth first
+                            GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
+                                    value.getClass(),
+                                    value,
+                                    genAILabelsDiscoveredList,
+                                    attrXPath,
+                                    fieldsToSkipMap,
+                                    getterMethodDiscoverer,
+                                    labelAndDataConcatenator
+                            );
+                        }
+                    }
+                    // Add a field separator
+                    if (iterator.hasNext()) {
+                        Functions.addGenAILabelMetadataMarker.apply(
+                                genAILabelsDiscoveredList,
+                                GenAILabelMetadataHelperDTO.builder()
+                                        .labelMetadata(Constants.GENAI_FIELD_SEPARATOR_INDICATOR)
+                                        .labelAndDataConcatenator(labelAndDataConcatenator)
+                                        .build()
+                        );
+                    }
+                }
+            } else {
+                // TODO: Should this be set as unknown
+            }
+
+            Functions.addGenAILabelMetadataMarker.apply(
+                    genAILabelsDiscoveredList,
+                    GenAILabelMetadataHelperDTO.builder()
+                            .labelMetadata(Constants.GENAI_MAP_END_INDICATOR)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build()
+            );
         } else {
             // This could be an object inside a collection
-            fwAttrList.add(GenAILabelDTO.builder()
+            genAILabelsDiscoveredList.add(GenAILabelDTO.builder()
                     .label(null)
                     .method(null)
                     .data(instance)
@@ -528,7 +598,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                           Field field,
                                           String labelDiscovered,
                                           String defaultValue,
-                                          List<GenAILabelDTO> fwAttrList,
+                                          List<GenAILabelDTO> genAILabelsDiscoveredList,
                                           Stack<String> attrXPath,
                                           Map<String, Integer> fieldsToSkipMap,
                                           Function<String, String> getterMethodDiscoverer,
@@ -561,8 +631,8 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
         if (field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_LIST.getLongName()) ||
                 field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_ARRAYLIST.getLongName())) {
             // Build a FWValue instance that we would use later
-            // to construct the record (for array list we suppress the data)
-            fwAttrList.add(
+            // to construct the record
+            genAILabelsDiscoveredList.add(
                     GenAILabelDTO.builder()
                             .label(labelDiscovered)
                             .method(getterMethodInferred)
@@ -576,7 +646,32 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                 GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
                         methodReturned.getClass(),
                         methodReturned,
-                        fwAttrList,
+                        genAILabelsDiscoveredList,
+                        attrXPath,
+                        fieldsToSkipMap,
+                        getterMethodDiscoverer,
+                        labelAndDataConcatenator
+                );
+            }
+        }  else if (field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_MAP.getLongName()) ||
+                field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_HASHMAP.getLongName())) {
+            // Build a FWValue instance that we would use later
+            // to construct the record
+            genAILabelsDiscoveredList.add(
+                    GenAILabelDTO.builder()
+                            .label(labelDiscovered)
+                            .method(getterMethodInferred)
+                            .data(methodReturned)
+                            .attributeClass(methodClass)
+                            .build()
+            );
+
+            if (methodReturned != null) {
+                // discover the label
+                GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
+                        methodReturned.getClass(),
+                        methodReturned,
+                        genAILabelsDiscoveredList,
                         attrXPath,
                         fieldsToSkipMap,
                         getterMethodDiscoverer,
@@ -586,7 +681,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
         } else {
             // Build a FWValue instance that we would use later
             // to construct the record
-            fwAttrList.add(
+            genAILabelsDiscoveredList.add(
                     GenAILabelDTO.builder()
                             .label(labelDiscovered)
                             .method(getterMethodInferred)

@@ -36,5 +36,17 @@ public interface Constants {
     }};
 
     public static final String DEFAULT_VALUE_UNKNOWN = "UNKNOWN_VALUE";
+
+    public static final String GENAI_INSTANCE_START_INDICATOR = "{";
+    public static final String GENAI_INSTANCE_END_INDICATOR = "}";
+    public static final String GENAI_FIELDS_START_INDICATOR = "(";
+    public static final String GENAI_FIELDS_END_INDICATOR = ")";
+    public static final String GENAI_FIELD_SEPARATOR_INDICATOR = ",";
+    public static final String GENAI_LIST_START_INDICATOR = "[";
+    public static final String GENAI_LIST_END_INDICATOR = "]";
+    public static final String GENAI_MAP_START_INDICATOR = "{";
+    public static final String GENAI_MAP_END_INDICATOR = "}";
+    public static final String GENAI_MAP_KV_SEPARATOR_INDICATOR = "<=>";
+    public static final String GENAI_MULTIPLE_LABEL_SEPARATOR_INDICATOR = "||";
 }
 

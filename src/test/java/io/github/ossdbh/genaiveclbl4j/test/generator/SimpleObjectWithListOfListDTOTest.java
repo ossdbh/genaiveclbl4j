@@ -32,7 +32,7 @@ public class SimpleObjectWithListOfListDTOTest {
 
     @Test
     public void test() {
-        String expected = "(This is a DTO that has a Collections object (This is a float someFloat with value 0.0,This is a label intBefore with value 0,This is a list element [[l1_s1,l1_s2],[l2_s1,l2_s2]],This is a label strAfter with value UNKNOWN_VALUE))";
+        String expected = "{This is a DTO that has a Collections object (This is a float someFloat with value 0.0,This is a label intBefore with value 0,This is a list element [[l1_s1,l1_s2],[l2_s1,l2_s2]],This is a label strAfter with value UNKNOWN_VALUE)}";
 
         String generatedLabel = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.simpleObjectWithListOfListDTO);
         System.out.println("Generated Label: " + generatedLabel);

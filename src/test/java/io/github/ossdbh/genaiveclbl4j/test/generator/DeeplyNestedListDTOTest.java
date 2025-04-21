@@ -14,7 +14,7 @@ public class DeeplyNestedListDTOTest {
 
     @Test
     public void test() {
-        String expected = "(This is a DeeplyNestedListDTO (This is a deeplyNestedListDTOint 0,This is a l_1_nodeList [This is a LeafNodeDTO (This is a leafNodeDTOList [This is a LeafNodeDTO (This is a leafNodeDTOInt 0),This is a LeafNodeDTO (This is a leafNodeDTOInt 0)],This is a String list called l_1_node_list UNKNOWN_VALUE ),This is a LeafNodeDTO (This is a leafNodeDTOList [This is a LeafNodeDTO (This is a leafNodeDTOInt 0),This is a LeafNodeDTO (This is a leafNodeDTOInt 0)],This is a String list called l_1_node_list UNKNOWN_VALUE )],This is a deeplyNestedListDTOfloat 0.0))";
+        String expected = "{This is a DeeplyNestedListDTO (This is a deeplyNestedListDTOint 0,This is a l_1_nodeList [{This is a LeafNodeDTO (This is a leafNodeDTOList [{This is a LeafNodeDTO (This is a leafNodeDTOInt 0)},{This is a LeafNodeDTO (This is a leafNodeDTOInt 0)}],This is a String list called l_1_node_list UNKNOWN_VALUE )},{This is a LeafNodeDTO (This is a leafNodeDTOList [{This is a LeafNodeDTO (This is a leafNodeDTOInt 0)},{This is a LeafNodeDTO (This is a leafNodeDTOInt 0)}],This is a String list called l_1_node_list UNKNOWN_VALUE )}],This is a deeplyNestedListDTOfloat 0.0)}";
         LeafNodeDTO leafNodeDTO_11 = LeafNodeDTO.builder().build();
         LeafNodeDTO leafNodeDTO_12 = LeafNodeDTO.builder().build();
         List<LeafNodeDTO> leafNodeDTOList_1 = new ArrayList<>();

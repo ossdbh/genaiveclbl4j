@@ -11,7 +11,7 @@ public class PrimitiveDTOTest {
 
     @Test
     public void test() {
-        String expected = "(This is a Primitive DTO (This is a primitiveDTOInt having value 0,This is a primitiveDTOFloat having value 0.0,This is a NestedPrimitiveDTO DTO (This is a nestedPrimitiveDTOInt having value 0,This is a nestedPrimitiveDTOFloat having value 0.0,This is a nestedPrimitiveDTOLong having value 0)This is a primitiveDTOLong having value 0))";
+        String expected = "{This is a Primitive DTO (This is a primitiveDTOInt having value 0,This is a primitiveDTOFloat having value 0.0,{This is a NestedPrimitiveDTO DTO (This is a nestedPrimitiveDTOInt having value 0,This is a nestedPrimitiveDTOFloat having value 0.0,This is a nestedPrimitiveDTOLong having value 0)}This is a primitiveDTOLong having value 0)}";
         PrimitiveDTO primitiveDTO = PrimitiveDTO.builder().nestedPrimitiveDTO(NestedPrimitiveDTO.builder().build()).build();
 
         String generatedLabel = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(primitiveDTO);
