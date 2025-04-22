@@ -11,6 +11,7 @@ import io.github.ossdbh.genaiveclbl4j.exception.GenAITextLabelGeneratorException
 import io.github.ossdbh.genaiveclbl4j.helper.AnnotationHelper;
 import io.github.ossdbh.genaiveclbl4j.helper.GetterMethodDiscovererHelper;
 import io.github.ossdbh.genaiveclbl4j.helper.XPathHelper;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -176,10 +177,25 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                             // or its an instance of Abstract
                             Class attrClass = genAILabelDTO.getClass();
                             // If its a collection instance
-                            if (genAILabelDTO.getData() instanceof Collection || genAILabelDTO.getData() instanceof AbstractMap) {
+                            if (genAILabelDTO.getData() instanceof Collection
+                                    || genAILabelDTO.getData() instanceof AbstractMap
+                                    || genAILabelDTO.getData().getClass().isArray()) {
                                 // We dont want to print the entire collection here
-                                // The objects subsequently are the ones that are part of the collection
-                                labelData = "";
+                                // The collection and / or map objects are subsequently present inside genAILabelDTOList
+                                // that would print themselves on subsequent values of "i" in this iteration
+
+                                // But we would want to distinguish between a collection/map that has a label
+                                // and a collection/map that is part of collection/map nesting
+                                if (genAILabelDTO.getLabel() != null) {
+                                    // If the element has label associated with it, we suppress printing any label data
+                                    // cause of the logic explained in the comments right after the previous if-statement
+                                    labelData = "";
+                                } else {
+                                    // If the element has no label associated with it then it is most probably a nested
+                                    // collection that was set as NULL by the caller
+                                    // We attempt to indicate that to the caller
+                                    labelData = Constants.DEFAULT_VALUE_UNKNOWN;
+                                }
                             } else {
                                 labelData = genAILabelDTO.getData().toString();
                             }
@@ -214,8 +230,10 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
      * @param clazz The class type that is being inspected
      * @param instance The actual instance that needs to be written in fixed width
      * @param genAILabelsDiscoveredList Depth First Stack that holds the discovered field attribute values
-     * @param fieldsToSkipList list of dot separated xPath style attributes to skip
-     * @param getterMethod The getter method discovery function that would be used by the generator
+     * @param fieldsToSkipMap stack that holds xPath like structure for skipping fields
+     * @param fieldsToSkipList list of dot separated xPath style attributes to skip passed in by the caller
+     * @param getterMethodDiscoverer The getter method discovery function that would be used by the generator
+     * @param labelAndDataConcatenator concatenator that would print the label and the data together
      * @return none
      */
     private static void generateTextLabel(Class clazz,
@@ -457,8 +475,10 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
             attrXPath.pop();
         } else if (clazz.getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_LIST.getLongName()) ||
                 clazz.getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_ARRAYLIST.getLongName())) {
+            // Cast the instance to a list
             List l = (List) instance;
 
+            // Add list start marker
             Functions.addGenAILabelMetadataMarker.apply(
                     genAILabelsDiscoveredList,
                     GenAILabelMetadataHelperDTO.builder()
@@ -467,12 +487,15 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                             .build()
             );
 
+            // Iterate over the list
             if (l != null && l.size() > 0) {
                 for (int i = 0; i < l.size(); i++) {
                     // We know that collections always works on objects
+                    // Receive element as an object
                     Object listInstanceObject = l.get(i);
                     if (listInstanceObject != null) {
                         // Run this object through depth first
+                        // TODO: modify XPath here incase we want to add support for per collection object skip fields
                         GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
                                 listInstanceObject.getClass(),
                                 listInstanceObject,
@@ -484,6 +507,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                         );
                     }
                     if (i < l.size() - 1) {
+                        // Add list element field separator
                         Functions.addGenAILabelMetadataMarker.apply(
                                 genAILabelsDiscoveredList,
                                 GenAILabelMetadataHelperDTO.builder()
@@ -493,9 +517,9 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                         );
                     }
                 }
-            } else {
-                // TODO: should we add UNKNOWN here
             }
+
+            // Add list end marker
             Functions.addGenAILabelMetadataMarker.apply(
                     genAILabelsDiscoveredList,
                     GenAILabelMetadataHelperDTO.builder()
@@ -508,6 +532,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
             // Cast the instance to a map
             Map m = (Map) instance;
 
+            // Add map start marker
             Functions.addGenAILabelMetadataMarker.apply(
                     genAILabelsDiscoveredList,
                     GenAILabelMetadataHelperDTO.builder()
@@ -525,8 +550,9 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
 
                     Object key = entry.getKey();
 
-                    // Run the key through depth first
                     if (key != null) {
+                        // Run the key through depth first
+                        // TODO: modify XPath here incase we want to add support for per map key object in skip fields
                         GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
                                 key.getClass(),
                                 key,
@@ -536,31 +562,98 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                 getterMethodDiscoverer,
                                 labelAndDataConcatenator
                         );
-                        // Add a KV separator
+                    } else {
+                        // We mark this as key unknown
+                        genAILabelsDiscoveredList.add(GenAILabelDTO.builder()
+                                .label(null)
+                                .method(null)
+                                .data(Constants.DEFAULT_VALUE_UNKNOWN)
+                                .attributeClass(null)
+                                .labelAndDataConcatenator(labelAndDataConcatenator)
+                                .build());
+                    }
+
+                    // Add a Key Value separator marker
+                    Functions.addGenAILabelMetadataMarker.apply(
+                            genAILabelsDiscoveredList,
+                            GenAILabelMetadataHelperDTO.builder()
+                                    .labelMetadata(Constants.GENAI_MAP_KV_SEPARATOR_INDICATOR)
+                                    .labelAndDataConcatenator(labelAndDataConcatenator)
+                                    .build()
+                    );
+
+                    Object value = entry.getValue();
+                    if (value != null) {
+                        // Run the value through depth first
+                        // TODO: modify XPath here incase we want to add support for per map value object in skip fields
+                        GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
+                                value.getClass(),
+                                value,
+                                genAILabelsDiscoveredList,
+                                attrXPath,
+                                fieldsToSkipMap,
+                                getterMethodDiscoverer,
+                                labelAndDataConcatenator
+                        );
+                    } else {
+                        // We mark this as value unknown
+                        genAILabelsDiscoveredList.add(GenAILabelDTO.builder()
+                                .label(null)
+                                .method(null)
+                                .data(Constants.DEFAULT_VALUE_UNKNOWN)
+                                .attributeClass(null)
+                                .labelAndDataConcatenator(labelAndDataConcatenator)
+                                .build());
+                    }
+
+                    if (iterator.hasNext()) {
+                        // Add map element field separator
                         Functions.addGenAILabelMetadataMarker.apply(
                                 genAILabelsDiscoveredList,
                                 GenAILabelMetadataHelperDTO.builder()
-                                        .labelMetadata(Constants.GENAI_MAP_KV_SEPARATOR_INDICATOR)
+                                        .labelMetadata(Constants.GENAI_FIELD_SEPARATOR_INDICATOR)
                                         .labelAndDataConcatenator(labelAndDataConcatenator)
                                         .build()
                         );
-
-                        Object value = entry.getValue();
-                        if (value != null) {
-                            // Run the value through depth first
-                            GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
-                                    value.getClass(),
-                                    value,
-                                    genAILabelsDiscoveredList,
-                                    attrXPath,
-                                    fieldsToSkipMap,
-                                    getterMethodDiscoverer,
-                                    labelAndDataConcatenator
-                            );
-                        }
                     }
-                    // Add a field separator
-                    if (iterator.hasNext()) {
+                }
+            }
+
+            // Add map end marker
+            Functions.addGenAILabelMetadataMarker.apply(
+                    genAILabelsDiscoveredList,
+                    GenAILabelMetadataHelperDTO.builder()
+                            .labelMetadata(Constants.GENAI_MAP_END_INDICATOR)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build()
+            );
+        } else if (instance.getClass().isArray()) {
+            // Add list start marker
+            Functions.addGenAILabelMetadataMarker.apply(
+                    genAILabelsDiscoveredList,
+                    GenAILabelMetadataHelperDTO.builder()
+                            .labelMetadata(Constants.GENAI_LIST_START_INDICATOR)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build()
+            );
+
+            // We have 2 cases to handle here
+            if (instance.getClass().getComponentType().isPrimitive()) {
+                // Case - 1, array of primitives
+                Object[] objectArr = Functions.toObject.apply(instance);
+
+                // Iterate over elements in the Object array
+                for (int i = 0 ; i < objectArr.length; i++) {
+                    genAILabelsDiscoveredList.add(GenAILabelDTO.builder()
+                            .label(null)
+                            .method(null)
+                            .data(objectArr[i])
+                            .attributeClass(null)
+                            .labelAndDataConcatenator(labelAndDataConcatenator)
+                            .build());
+
+                    if (i < objectArr.length - 1) {
+                        // Add list/array element field separator
                         Functions.addGenAILabelMetadataMarker.apply(
                                 genAILabelsDiscoveredList,
                                 GenAILabelMetadataHelperDTO.builder()
@@ -571,17 +664,49 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                     }
                 }
             } else {
-                // TODO: Should this be set as unknown
+                // Case - 2, array of objects
+                Object[] objectArr = (Object[]) instance;
+
+                // Iterate over elements in the Object array
+                for (int i = 0 ; i < objectArr.length; i++) {
+                    // Fetch the object inside the array
+                    Object objectArrInstance = objectArr[i];
+
+                    // Run the object instance inside the array through depth first
+                    // TODO: modify XPath here incase we want to add support for per map value object in skip fields
+                    GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
+                            objectArrInstance.getClass(),
+                            objectArrInstance,
+                            genAILabelsDiscoveredList,
+                            attrXPath,
+                            fieldsToSkipMap,
+                            getterMethodDiscoverer,
+                            labelAndDataConcatenator
+                    );
+
+                    if (i < objectArr.length - 1) {
+                        // Add list/array element field separator
+                        Functions.addGenAILabelMetadataMarker.apply(
+                                genAILabelsDiscoveredList,
+                                GenAILabelMetadataHelperDTO.builder()
+                                        .labelMetadata(Constants.GENAI_FIELD_SEPARATOR_INDICATOR)
+                                        .labelAndDataConcatenator(labelAndDataConcatenator)
+                                        .build()
+                        );
+                    }
+                }
             }
 
+            // Add list end marker
             Functions.addGenAILabelMetadataMarker.apply(
                     genAILabelsDiscoveredList,
                     GenAILabelMetadataHelperDTO.builder()
-                            .labelMetadata(Constants.GENAI_MAP_END_INDICATOR)
+                            .labelMetadata(Constants.GENAI_LIST_END_INDICATOR)
                             .labelAndDataConcatenator(labelAndDataConcatenator)
                             .build()
             );
         } else {
+            // For now this handles both objects and primitives
             // This could be an object inside a collection
             genAILabelsDiscoveredList.add(GenAILabelDTO.builder()
                     .label(null)
@@ -593,6 +718,10 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
         }
     }
 
+    /*
+     * this method is invoked on an attribute that has been
+     * marked with annotation GenAILabel
+     */
     private static void discoverNodeLabel(Class clazz,
                                           Object instance,
                                           Field field,
@@ -628,33 +757,11 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
         //Infer data type
         Class methodClass = getter.getReturnType();
 
-        if (field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_LIST.getLongName()) ||
-                field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_ARRAYLIST.getLongName())) {
-            // Build a FWValue instance that we would use later
-            // to construct the record
-            genAILabelsDiscoveredList.add(
-                    GenAILabelDTO.builder()
-                            .label(labelDiscovered)
-                            .method(getterMethodInferred)
-                            .data(methodReturned)
-                            .attributeClass(methodClass)
-                            .build()
-            );
-
-            if (methodReturned != null) {
-                // discover the label
-                GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(
-                        methodReturned.getClass(),
-                        methodReturned,
-                        genAILabelsDiscoveredList,
-                        attrXPath,
-                        fieldsToSkipMap,
-                        getterMethodDiscoverer,
-                        labelAndDataConcatenator
-                );
-            }
-        }  else if (field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_MAP.getLongName()) ||
-                field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_HASHMAP.getLongName())) {
+        if (field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_LIST.getLongName())
+                || field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_ARRAYLIST.getLongName())
+                || field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_MAP.getLongName())
+                || field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_HASHMAP.getLongName())
+                || field.getType().isArray()) {
             // Build a FWValue instance that we would use later
             // to construct the record
             genAILabelsDiscoveredList.add(
@@ -679,6 +786,8 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                 );
             }
         } else {
+            // Check if we have a primitive array
+
             // Build a FWValue instance that we would use later
             // to construct the record
             genAILabelsDiscoveredList.add(
