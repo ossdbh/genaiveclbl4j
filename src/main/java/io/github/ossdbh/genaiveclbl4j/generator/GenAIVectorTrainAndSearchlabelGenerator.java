@@ -784,6 +784,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
         Class methodClass = getter.getReturnType();
 
         // Check if the node that we are in, is a java collection
+        // or is an array
         if (field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_LIST.getLongName())
                 || field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_ARRAYLIST.getLongName())
                 || field.getType().getName().equals(JavaStandardLibraryClassEnum.JAVA_UTIL_MAP.getLongName())
@@ -839,8 +840,6 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                 );
             }
         } else {
-            // TODO: Check if we have a primitive array
-
             if (labelDiscovered != null && !XPathHelper.skipField(attrXPath, fieldsToSkipMap)) {
                 // Build a FWValue instance that we would use later
                 // to construct the record
