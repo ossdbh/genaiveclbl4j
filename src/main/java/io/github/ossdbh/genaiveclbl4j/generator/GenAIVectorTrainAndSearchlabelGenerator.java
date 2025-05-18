@@ -201,7 +201,7 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                             }
                         } else {
                             // The label's attribute data is null so we print default value
-                            labelData = Constants.DEFAULT_VALUE_UNKNOWN + " ";
+                            labelData = Constants.DEFAULT_VALUE_UNKNOWN;
                         }
 
                         builder.append(label + labelData);
@@ -315,30 +315,26 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                         for (int k = 0; k < labels.length; k++) {
                                             String labelDiscovered = labels[k].label();
 
-                                            String defaultValue = labels[k].defaultValue();
-
-                                            if (instance != null) {
-                                                // discover the label
-                                                GenAIVectorTrainAndSearchlabelGenerator.discoverNodeLabel(
-                                                        clazz,
-                                                        instance,
-                                                        f,
-                                                        labelDiscovered,
-                                                        defaultValue,
+                                            // discover the label
+                                            GenAIVectorTrainAndSearchlabelGenerator.discoverNodeLabel(
+                                                    clazz,
+                                                    instance,
+                                                    f,
+                                                    labelDiscovered,
+                                                    genAILabelsDiscoveredList,
+                                                    attrXPath,
+                                                    fieldsToSkipMap,
+                                                    getterMethodDiscoverer,
+                                                    labelAndDataConcatenator);
+                                            if (k < labels.length - 1) {
+                                                Functions.addGenAILabelMetadataMarker.apply(
                                                         genAILabelsDiscoveredList,
-                                                        attrXPath,
-                                                        fieldsToSkipMap,
-                                                        getterMethodDiscoverer,
-                                                        labelAndDataConcatenator);
-                                                if (k < labels.length - 1) {
-                                                    Functions.addGenAILabelMetadataMarker.apply(
-                                                            genAILabelsDiscoveredList,
-                                                            GenAILabelMetadataHelperDTO.builder()
-                                                                    .labelMetadata(Constants.GENAI_MULTIPLE_LABEL_SEPARATOR_INDICATOR)
-                                                                    .labelAndDataConcatenator(labelAndDataConcatenator).build()
-                                                    );
-                                                }
+                                                        GenAILabelMetadataHelperDTO.builder()
+                                                                .labelMetadata(Constants.GENAI_MULTIPLE_LABEL_SEPARATOR_INDICATOR)
+                                                                .labelAndDataConcatenator(labelAndDataConcatenator).build()
+                                                );
                                             }
+
                                         }
                                         if (i < declaredFields.size() - 1) {
                                             Functions.addGenAILabelMetadataMarker.apply(
@@ -366,24 +362,17 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                                         Constants.GENAI_LABEL_METHOD_KEY))
                                                 .invoke(fieldAnnotations[j]);
 
-                                        String defaultValue = (String) fieldAnnotations[j].annotationType()
-                                                .getMethod(GenAIAnnotationEnum.GENAILABEL.getMethod(
-                                                        Constants.GENAI_LABEL_METHOD_DEFAULT_KEY))
-                                                .invoke(fieldAnnotations[j]);
+                                        GenAIVectorTrainAndSearchlabelGenerator.discoverNodeLabel(
+                                                clazz,
+                                                instance,
+                                                f,
+                                                labelDiscovered,
+                                                genAILabelsDiscoveredList,
+                                                attrXPath,
+                                                fieldsToSkipMap,
+                                                getterMethodDiscoverer,
+                                                labelAndDataConcatenator);
 
-                                        if (instance != null) {
-                                            GenAIVectorTrainAndSearchlabelGenerator.discoverNodeLabel(
-                                                    clazz,
-                                                    instance,
-                                                    f,
-                                                    labelDiscovered,
-                                                    defaultValue,
-                                                    genAILabelsDiscoveredList,
-                                                    attrXPath,
-                                                    fieldsToSkipMap,
-                                                    getterMethodDiscoverer,
-                                                    labelAndDataConcatenator);
-                                        }
                                         if (i < declaredFields.size() - 1) {
                                             Functions.addGenAILabelMetadataMarker.apply(
                                                     genAILabelsDiscoveredList,
@@ -431,6 +420,26 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                                     fieldsToSkipMap,
                                                     getterMethodDiscoverer,
                                                     labelAndDataConcatenator);
+                                        } else {
+                                            // Since nested instance is null, we want to discover the node
+                                            GenAIVectorTrainAndSearchlabelGenerator.discoverNodeLabel(
+                                                    clazz,
+                                                    instance,
+                                                    f,
+                                                    null,
+                                                    genAILabelsDiscoveredList,
+                                                    attrXPath,
+                                                    fieldsToSkipMap,
+                                                    getterMethodDiscoverer,
+                                                    labelAndDataConcatenator);
+                                        }
+                                        if (i < declaredFields.size() - 1) {
+                                            Functions.addGenAILabelMetadataMarker.apply(
+                                                    genAILabelsDiscoveredList,
+                                                    GenAILabelMetadataHelperDTO.builder()
+                                                            .labelMetadata(Constants.GENAI_FIELD_SEPARATOR_INDICATOR)
+                                                            .labelAndDataConcatenator(labelAndDataConcatenator).build()
+                                            );
                                         }
                                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                                         throw new GenAITextLabelGeneratorException(e.getMessage(), e);
@@ -455,7 +464,6 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                     instance,
                                     f,
                                     null,
-                                    null,
                                     genAILabelsDiscoveredList,
                                     attrXPath,
                                     fieldsToSkipMap,
@@ -464,6 +472,15 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
 
                             // pop the element
                             attrXPath.pop();
+
+                            if (i < declaredFields.size() - 1) {
+                                Functions.addGenAILabelMetadataMarker.apply(
+                                        genAILabelsDiscoveredList,
+                                        GenAILabelMetadataHelperDTO.builder()
+                                                .labelMetadata(Constants.GENAI_FIELD_SEPARATOR_INDICATOR)
+                                                .labelAndDataConcatenator(labelAndDataConcatenator).build()
+                                );
+                            }
                         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
                             throw new GenAITextLabelGeneratorException(e.getMessage(), e);
                         }
@@ -511,7 +528,6 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                     // Receive element as an object
                     Object listInstanceObject = l.get(i);
                     if (listInstanceObject != null) {
-                        // TODO: modify XPath here incase we want to add support for per collection object skip fields
                         // Now we add a list index into xPath
                         attrXPath.push("[" + i + "]");
 
@@ -752,7 +768,6 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
                                           Object instance,
                                           Field field,
                                           String labelDiscovered,
-                                          String defaultValue,
                                           List<GenAILabelDTO> genAILabelsDiscoveredList,
                                           Stack<String> attrXPath,
                                           Map<String, Integer> fieldsToSkipMap,
@@ -769,19 +784,11 @@ public class GenAIVectorTrainAndSearchlabelGenerator {
         Method getter = clazz.getMethod(getterMethodInferred);
         //System.out.println("Calling getter " + getter.getName());
 
-        // Invoke the method here
-        Object methodReturned = getter.invoke(instance, null);
-
-        // For now we only support default value for fields of type String
-        // Check if the field's type is of String instance using a blank string
-        // TODO: for now we assume that string fields only could be null
-        // TODO: and we need to source default values only for string fields
-        if (methodReturned == null && field.getType().isInstance("")) {
-            methodReturned = defaultValue;
+        Object methodReturned = null; Class methodClass = null;
+        if (instance != null) {
+            methodReturned = getter.invoke(instance, null);
+            methodClass = getter.getReturnType();
         }
-
-        //Infer data type
-        Class methodClass = getter.getReturnType();
 
         // Check if the node that we are in, is a java collection
         // or is an array

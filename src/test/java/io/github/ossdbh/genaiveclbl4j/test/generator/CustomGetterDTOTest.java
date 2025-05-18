@@ -38,19 +38,20 @@ public class CustomGetterDTOTest {
 
     @Test
     public void test2() {
-        String expected = "{This is a NonLombokDTO (This is a string pqrstuvw,This is a string 10000000)}";
+        String expected = "{This is a NonLombokDTO (This is a string pqrstuvw,,This is a string 10000000)}";
 
         this.nonLombokDTO.SET_str1("pqrstuvw");
         this.nonLombokDTO.SET_int1(10000000);
 
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.nonLombokDTO, s -> "GET_" + s);
-        System.out.println("Format: " + format);
+        System.out.println("Expect: " + expected);
+        System.out.println("Actual: " + format);
         Assert.assertTrue(expected.equals(format));
     }
 
     @Test
     public void test3() {
-        String expected = "{This is a NonLombokDTO (This is a string pqrstuvw,{(This is a nonlombok nested string attribute whatisthis,This is a nonlombok nested string attribute1000)}This is a string 10000000)}";
+        String expected = "{This is a NonLombokDTO (This is a string pqrstuvw,{(This is a nonlombok nested string attribute whatisthis,This is a nonlombok nested string attribute1000)},This is a string 10000000)}";
 
         this.nonLombokDTO.SET_str1("pqrstuvw");
 
@@ -62,7 +63,8 @@ public class CustomGetterDTOTest {
         this.nonLombokDTO.SET_int1(10000000);
 
         String format = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.nonLombokDTO, s -> "GET_" + s);
-        System.out.println("Format: " + format);
+        System.out.println("Expect: " + expected);
+        System.out.println("Actual: " + format);
         Assert.assertTrue(expected.equals(format));
     }
 }

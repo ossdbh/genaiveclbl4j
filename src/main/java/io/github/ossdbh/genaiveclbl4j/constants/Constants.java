@@ -36,6 +36,7 @@ public interface Constants {
     }};
 
     public static final String DEFAULT_VALUE_UNKNOWN = "UNKNOWN_VALUE";
+    public static final String GENAI_NESTED_INSTANCE_UNKNOWN_VALUE = "UNKNOWN_VALUE";
     public static final String EMPTY_LIST = "EMPTY_LIST";
 
     public static final String GENAI_INSTANCE_START_INDICATOR = "{";

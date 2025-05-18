@@ -9,8 +9,10 @@ public class NonLombokDTO {
 
     @GenAILabel(label = "This is a string ")
     private String str1;
+
     @GenAINestedInstance
     private NestedNonLombokDTO nestedNonLombokDTO;
+
     @GenAILabel(label = "This is a string ")
     private Integer int1;
 

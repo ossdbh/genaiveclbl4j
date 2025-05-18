@@ -16,7 +16,7 @@ public class FlatDTOWithStandardObjectArrayTest {
 
     @Test
     public void test1() {
-        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is a boolean array UNKNOWN_VALUE,This is a byte array UNKNOWN_VALUE,This is a char array UNKNOWN_VALUE,This is a double array UNKNOWN_VALUE,This is a float array UNKNOWN_VALUE,This is an int array UNKNOWN_VALUE,This is a long array UNKNOWN_VALUE,This is a short array UNKNOWN_VALUE,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE )}";
+        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is a boolean array UNKNOWN_VALUE,This is a byte array UNKNOWN_VALUE,This is a char array UNKNOWN_VALUE,This is a double array UNKNOWN_VALUE,This is a float array UNKNOWN_VALUE,This is an int array UNKNOWN_VALUE,This is a long array UNKNOWN_VALUE,This is a short array UNKNOWN_VALUE,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE)}";
 
         FlatDTOWithStandardObjectArray flatDTOWithPrimitiveArray = FlatDTOWithStandardObjectArray.builder().build();
 
@@ -31,7 +31,7 @@ public class FlatDTOWithStandardObjectArrayTest {
 
     @Test
     public void test2() {
-        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is a boolean array UNKNOWN_VALUE,This is a byte array UNKNOWN_VALUE,This is a char array UNKNOWN_VALUE,This is a double array UNKNOWN_VALUE,This is a float array UNKNOWN_VALUE,This is an int array UNKNOWN_VALUE,This is a long array UNKNOWN_VALUE,This is a short array UNKNOWN_VALUE,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE )}";
+        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is a boolean array UNKNOWN_VALUE,This is a byte array UNKNOWN_VALUE,This is a char array UNKNOWN_VALUE,This is a double array UNKNOWN_VALUE,This is a float array UNKNOWN_VALUE,This is an int array UNKNOWN_VALUE,This is a long array UNKNOWN_VALUE,This is a short array UNKNOWN_VALUE,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE)}";
 
         FlatDTOWithStandardObjectArray flatDTOWithPrimitiveArray = FlatDTOWithStandardObjectArray.builder().build();
 

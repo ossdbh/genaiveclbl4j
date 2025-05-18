@@ -53,23 +53,27 @@ public class GenAIVectorTrainAndSearchlabelGeneratorTest {
 
     @Test
     public void testFWRecordGenerator() {
-        String expected = "{This is a nested DTO label generation test record (This is a string l_val,{This is a nested child dto record @level1 starts (This is a nested String @level1 l1_val,{This is a nested child dto record, level 2 instance begins (This is a deeply nested string, level 2 l2_val||Testing multiple labels, level 2 l2_val,This is a deeply nested integer, level 2 exiting 20)}This is also a nested String @level1 exiting10)}{This is a nested child dto record another @level1 instance begins (This is a nested string @level1 l1_val,This is also a nested string another @level1 exiting 30)}This is an Integer 40,This is also an Integer 50,This is another Integer 123)}";
+        String expected = "{This is a nested DTO label generation test record (This is a string l_val,{This is a nested child dto record @level1 starts (This is a nested String @level1 l1_val,{This is a nested child dto record, level 2 instance begins (This is a deeply nested string, level 2 l2_val||Testing multiple labels, level 2 l2_val,This is a deeply nested integer, level 2 exiting 20)},This is also a nested String @level1 exiting10)},{This is a nested child dto record another @level1 instance begins (This is a nested string @level1 l1_val,This is also a nested string another @level1 exiting 30)},This is an Integer 40,This is also an Integer 50,This is another Integer 123)}";
         String fwFormattedRecord = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.parentDTO);
 
-        System.out.println(fwFormattedRecord);
+        System.out.println("expect: " + expected);
+        System.out.println();
+        System.out.println("actual: " + fwFormattedRecord);
 
         Assert.assertTrue(expected.equals(fwFormattedRecord));
     }
 
     @Test
     public void testFWRecordGeneratorSkip() {
-        String expected = "{This is a nested DTO label generation test record (This is a string l_val,{This is a nested child dto record @level1 starts (This is a nested String @level1 l1_val,{This is a nested child dto record, level 2 instance begins }This is also a nested String @level1 exiting10)}{This is a nested child dto record another @level1 instance begins (This is a nested string @level1 l1_val,This is also a nested string another @level1 exiting 30)}This is also an Integer 50,This is another Integer 123)}";
+        String expected = "{This is a nested DTO label generation test record (This is a string l_val,{This is a nested child dto record @level1 starts (This is a nested String @level1 l1_val,{This is a nested child dto record, level 2 instance begins },This is also a nested String @level1 exiting10)},{This is a nested child dto record another @level1 instance begins (This is a nested string @level1 l1_val,This is also a nested string another @level1 exiting 30)},This is also an Integer 50,This is another Integer 123)}";
         List<String> l = new ArrayList<>();
         l.add("ParentDTO.parentDTOInt1");
         l.add("ParentDTO.Child1DTO.ChildOfChild11DTO");
         String fwFormattedRecord = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(this.parentDTO, l);
 
-        System.out.println(fwFormattedRecord);
+        System.out.println("expect: " + expected);
+        System.out.println();
+        System.out.println("actual: " + fwFormattedRecord);
 
         // We skipped the 3 level nested dto ChildOfChild11DTO and parent level attribute parentDTOInt1
         // Hence the assert value as compared to the previous test is level32010 removed and right justified 40 removed

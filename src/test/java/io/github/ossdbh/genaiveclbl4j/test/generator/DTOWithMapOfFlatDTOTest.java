@@ -54,7 +54,7 @@ public class DTOWithMapOfFlatDTOTest {
 
         DTOWithMapOfFlatDTO dtoWithMapOfFlatDTO = DTOWithMapOfFlatDTO.builder().data1("data1").flatDTOMap(map).data2(100).build();
 
-        String expected = "{This is a DTO with a Map (This is String data denoting a name data1||Name is an important piece of information data1,This is Map of String:FlatDTO {UNKNOWN_VALUE<=>UNKNOWN_VALUE,1<=>UNKNOWN_VALUE,2<=>UNKNOWN_VALUE,3<=>[],4<=>[{This is a flat DTO (This is String data denoting a name data1||Name is an important piece of information data1,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE )},{This is a flat DTO (This is String data denoting a name data1||Name is an important piece of information data1,This is biginteger data denoting heartbeat count till date 12345678)}]},This is int data 100)}";
+        String expected = "{This is a DTO with a Map (This is String data denoting a name data1||Name is an important piece of information data1,This is Map of String:FlatDTO {UNKNOWN_VALUE<=>UNKNOWN_VALUE,1<=>UNKNOWN_VALUE,2<=>UNKNOWN_VALUE,3<=>[],4<=>[{This is a flat DTO (This is String data denoting a name data1||Name is an important piece of information data1,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE)},{This is a flat DTO (This is String data denoting a name data1||Name is an important piece of information data1,This is biginteger data denoting heartbeat count till date 12345678)}]},This is int data 100)}";
 
         String generatedLabel = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(dtoWithMapOfFlatDTO);
         System.out.println("Generated Label: " + generatedLabel);
