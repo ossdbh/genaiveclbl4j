@@ -18,7 +18,7 @@ public class DTOWithMapOfMapTest {
     public void test1() {
         DTOWithMap dtoWithMap = DTOWithMap.builder().data1("data1").stringMap(null).data2(100).build();
 
-        String expected = "{This is a DTO with a Map (This is String data denoting a name data1||Name is an important piece of information data1,This is Map of String:String UNKNOWN_VALUE ,This is int data 100)}";
+        String expected = "{This is a DTO with a Map (This is String data denoting a name data1||Name is an important piece of information data1,This is Map of String:String UNKNOWN_VALUE,This is int data 100)}";
 
         String generatedLabel = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(dtoWithMap);
         System.out.println("Generated Label: " + generatedLabel);

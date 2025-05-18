@@ -17,7 +17,7 @@ public class DTOWithMapOfFlatDTOTest {
     public void test1() {
         DTOWithMapOfFlatDTO dtoWithMapOfFlatDTO = DTOWithMapOfFlatDTO.builder().build();
 
-        String expected = "{This is a DTO with a Map (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is Map of String:FlatDTO UNKNOWN_VALUE ,This is int data 0)}";
+        String expected = "{This is a DTO with a Map (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is Map of String:FlatDTO UNKNOWN_VALUE,This is int data 0)}";
 
         String generatedLabel = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(dtoWithMapOfFlatDTO);
         System.out.println("Generated Label: " + generatedLabel);
@@ -29,7 +29,7 @@ public class DTOWithMapOfFlatDTOTest {
     public void test2() {
         DTOWithMapOfFlatDTO dtoWithMapOfFlatDTO = DTOWithMapOfFlatDTO.builder().data1("data1").flatDTOMap(null).data2(100).build();
 
-        String expected = "{This is a DTO with a Map (This is String data denoting a name data1||Name is an important piece of information data1,This is Map of String:FlatDTO UNKNOWN_VALUE ,This is int data 100)}";
+        String expected = "{This is a DTO with a Map (This is String data denoting a name data1||Name is an important piece of information data1,This is Map of String:FlatDTO UNKNOWN_VALUE,This is int data 100)}";
 
         String generatedLabel = GenAIVectorTrainAndSearchlabelGenerator.generateTextLabel(dtoWithMapOfFlatDTO);
         System.out.println("Generated Label: " + generatedLabel);

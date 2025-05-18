@@ -16,7 +16,7 @@ public class FlatDTOWithStandardObjectArrayTest {
 
     @Test
     public void test1() {
-        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is a boolean array UNKNOWN_VALUE ,This is a byte array UNKNOWN_VALUE ,This is a char array UNKNOWN_VALUE ,This is a double array UNKNOWN_VALUE ,This is a float array UNKNOWN_VALUE ,This is an int array UNKNOWN_VALUE ,This is a long array UNKNOWN_VALUE ,This is a short array UNKNOWN_VALUE ,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE )}";
+        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is a boolean array UNKNOWN_VALUE,This is a byte array UNKNOWN_VALUE,This is a char array UNKNOWN_VALUE,This is a double array UNKNOWN_VALUE,This is a float array UNKNOWN_VALUE,This is an int array UNKNOWN_VALUE,This is a long array UNKNOWN_VALUE,This is a short array UNKNOWN_VALUE,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE )}";
 
         FlatDTOWithStandardObjectArray flatDTOWithPrimitiveArray = FlatDTOWithStandardObjectArray.builder().build();
 
@@ -31,7 +31,7 @@ public class FlatDTOWithStandardObjectArrayTest {
 
     @Test
     public void test2() {
-        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is a boolean array UNKNOWN_VALUE ,This is a byte array UNKNOWN_VALUE ,This is a char array UNKNOWN_VALUE ,This is a double array UNKNOWN_VALUE ,This is a float array UNKNOWN_VALUE ,This is an int array UNKNOWN_VALUE ,This is a long array UNKNOWN_VALUE ,This is a short array UNKNOWN_VALUE ,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE )}";
+        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name UNKNOWN_VALUE||Name is an important piece of information UNKNOWN_VALUE,This is a boolean array UNKNOWN_VALUE,This is a byte array UNKNOWN_VALUE,This is a char array UNKNOWN_VALUE,This is a double array UNKNOWN_VALUE,This is a float array UNKNOWN_VALUE,This is an int array UNKNOWN_VALUE,This is a long array UNKNOWN_VALUE,This is a short array UNKNOWN_VALUE,This is biginteger data denoting heartbeat count till date UNKNOWN_VALUE )}";
 
         FlatDTOWithStandardObjectArray flatDTOWithPrimitiveArray = FlatDTOWithStandardObjectArray.builder().build();
 
@@ -47,7 +47,7 @@ public class FlatDTOWithStandardObjectArrayTest {
 
     @Test
     public void test3() {
-        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name data1||Name is an important piece of information data1,This is a boolean array [true,false],This is a byte array [31,127,3],This is a char array [a,b,c],This is a double array [125.123,125.123,125.123],This is a float array [1.0,125.123,125.123],This is an int array [1,2,3],This is a long array [1223343324,12313234234,23423423234],This is a short array UNKNOWN_VALUE ,This is a map of String:Integer[] UNKNOWN_VALUE ,This is biginteger data denoting heartbeat count till date 123123123)}";
+        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name data1||Name is an important piece of information data1,This is a boolean array [true,false],This is a byte array [31,127,3],This is a char array [a,b,c],This is a double array [125.123,125.123,125.123],This is a float array [1.0,125.123,125.123],This is an int array [1,2,3],This is a long array [1223343324,12313234234,23423423234],This is a short array UNKNOWN_VALUE,This is a map of String:Integer[] UNKNOWN_VALUE,This is biginteger data denoting heartbeat count till date 123123123)}";
 
         FlatDTOWithStandardObjectArray flatDTOWithPrimitiveArray = FlatDTOWithStandardObjectArray
                 .builder()
@@ -70,7 +70,7 @@ public class FlatDTOWithStandardObjectArrayTest {
 
     @Test
     public void test4() {
-        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name data1||Name is an important piece of information data1,This is a boolean array [true,false],This is a byte array [31,127,3],This is a char array [a,b,c],This is a double array [125.123,125.123,125.123],This is a float array [1.0,125.123,125.123],This is an int array [1,2,3],This is a long array [1223343324,12313234234,23423423234],This is a short array UNKNOWN_VALUE ,This is a map of String:Integer[] {},This is biginteger data denoting heartbeat count till date 123123123)}";
+        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name data1||Name is an important piece of information data1,This is a boolean array [true,false],This is a byte array [31,127,3],This is a char array [a,b,c],This is a double array [125.123,125.123,125.123],This is a float array [1.0,125.123,125.123],This is an int array [1,2,3],This is a long array [1223343324,12313234234,23423423234],This is a short array UNKNOWN_VALUE,This is a map of String:Integer[] {},This is biginteger data denoting heartbeat count till date 123123123)}";
 
         Map<String, Integer[]> map = new HashMap<>();
 
@@ -96,7 +96,7 @@ public class FlatDTOWithStandardObjectArrayTest {
 
     @Test
     public void test5() {
-        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name data1||Name is an important piece of information data1,This is a boolean array [true,false],This is a byte array [31,127,3],This is a char array [a,b,c],This is a double array [125.123,125.123,125.123],This is a float array [1.0,125.123,125.123],This is an int array [1,2,3],This is a long array [1223343324,12313234234,23423423234],This is a short array UNKNOWN_VALUE ,This is a map of String:Integer[] {1<=>[]},This is biginteger data denoting heartbeat count till date 123123123)}";
+        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name data1||Name is an important piece of information data1,This is a boolean array [true,false],This is a byte array [31,127,3],This is a char array [a,b,c],This is a double array [125.123,125.123,125.123],This is a float array [1.0,125.123,125.123],This is an int array [1,2,3],This is a long array [1223343324,12313234234,23423423234],This is a short array UNKNOWN_VALUE,This is a map of String:Integer[] {1<=>[]},This is biginteger data denoting heartbeat count till date 123123123)}";
 
         Map<String, Integer[]> map = new HashMap<>();
         map.put("1", new Integer[]{});
@@ -123,7 +123,7 @@ public class FlatDTOWithStandardObjectArrayTest {
 
     @Test
     public void test6() {
-        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name data1||Name is an important piece of information data1,This is a boolean array [true,false],This is a byte array [31,127,3],This is a char array [a,b,c],This is a double array [125.123,125.123,125.123],This is a float array [1.0,125.123,125.123],This is an int array [1,2,3],This is a long array [1223343324,12313234234,23423423234],This is a short array UNKNOWN_VALUE ,This is a map of String:Integer[] {1<=>[1]},This is biginteger data denoting heartbeat count till date 123123123)}";
+        String expected = "{This is a FlatDTOWithStandardObjectArray (This is String data denoting a name data1||Name is an important piece of information data1,This is a boolean array [true,false],This is a byte array [31,127,3],This is a char array [a,b,c],This is a double array [125.123,125.123,125.123],This is a float array [1.0,125.123,125.123],This is an int array [1,2,3],This is a long array [1223343324,12313234234,23423423234],This is a short array UNKNOWN_VALUE,This is a map of String:Integer[] {1<=>[1]},This is biginteger data denoting heartbeat count till date 123123123)}";
 
         Map<String, Integer[]> map = new HashMap<>();
         map.put("1", new Integer[]{1});
